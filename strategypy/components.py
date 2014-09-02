@@ -1,4 +1,5 @@
 import random
+import copy
 
 import settings
 
@@ -14,6 +15,7 @@ class Player(object):
         self.units = [Unit(self, i) for i in xrange(settings.UNITS)]
         self.has_killed = {}
         self.was_killed_by = {}
+        self.actions = []
 
     def get_bot_class_module_name(self):
         """
@@ -22,6 +24,11 @@ class Player(object):
         """
         _, module_name = self.bot_class.__module__.split('.')
         return module_name
+
+    def log_action(self, action, ctx):
+        cpy = copy.deepcopy(ctx)
+        cpy["action"] = action
+        self.actions.append(cpy)
 
 
 class Unit(object):
@@ -53,6 +60,9 @@ class Unit(object):
         """
         ctx = self.assemble_ctx_for_bot()
         direction = self.bot.__process_action__(ctx)
+
+        self.player.log_action(direction, ctx)
+
         self.move(direction)
 
     def assemble_ctx_for_bot(self):
