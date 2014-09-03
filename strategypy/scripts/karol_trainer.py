@@ -12,6 +12,9 @@ from game import Game
 def log_action(action, ctx):
     radius = 10
 
+    if not action:
+        action = "None"
+
     position = ctx["position"]
     player_pk = ctx["player_pk"]
     me = set(ctx["current_data"][player_pk].values())
@@ -52,8 +55,16 @@ def play_game(p1, p2):
     file_name = "{}-{}-{}.json".format(p1, p2, time.time())
 
     with open("data/{}".format(file_name), "w") as f:
-        json.dump(game.get_winner().actions, f)
+        winner = game.get_winner()
+        if winner:
+            json.dump(winner.actions, f)
 
 if __name__ == '__main__':
-    for x in xrange(100):
+    for x in xrange(10000):
         play_game('davide', 'happiness')
+
+    for x in xrange(10000):
+        play_game('killer', 'happiness')
+
+    for x in xrange(10000):
+        play_game('killer', 'davide')
